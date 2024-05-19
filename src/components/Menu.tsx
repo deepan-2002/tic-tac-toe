@@ -18,17 +18,14 @@ export default function SimpleListMenu() {
     const newMode = useSelector((state: any) => state.game.newMode)
     const dispatch = useDispatch();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const [selectedIndex, setSelectedIndex] = React.useState(1);
     const open = Boolean(anchorEl);
     const handleClickListItem = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
 
     const handleMenuItemClick = (
-        event: React.MouseEvent<HTMLElement>,
         index: number,
     ) => {
-        setSelectedIndex(index);
         setAnchorEl(null);
         dispatch(handleNewMode(index))
     };
@@ -54,7 +51,7 @@ export default function SimpleListMenu() {
                     sx={{ padding: '2.5px 20px' }}
                 >
                     <ListItemText
-                        primary={options[newMode ? 0 :1]}
+                        primary={options[newMode ? 0 : 1]}
                     />
                 </ListItemButton>
             </List>
@@ -72,8 +69,8 @@ export default function SimpleListMenu() {
                     <MenuItem
                         key={option}
                         disabled={isStarted}
-                        selected={index === (newMode ? 0 :1)}
-                        onClick={(event) => handleMenuItemClick(event, index)}
+                        selected={index === (newMode ? 0 : 1)}
+                        onClick={() => handleMenuItemClick(index)}
                     >
                         {option}
                     </MenuItem>
