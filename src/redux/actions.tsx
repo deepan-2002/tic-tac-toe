@@ -6,10 +6,12 @@ const initialState = {
         [null, null, null],
         [null, null, null],
     ] as any,
-    value: 'X',
+    value: 'x',
     won: false,
     played: [] as any,
     newMode: false,
+    isStarted: false,
+    isDraw: false,
 }
 
 export const gameSlice = createSlice({
@@ -62,27 +64,53 @@ export const gameSlice = createSlice({
                 state.won = true;
             }
         },
+        checkDraw: (state) => {
+            const result = state.matrix.map((arr: any) => {
+                return arr.every((el: any) => el !== null)
+            }).every((el: any) => el === true) && !state.won;
+            state.isDraw = result
+        },
         handleClick: (state, action) => {
+            if (!state.isStarted) state.isStarted = true;
             state.matrix[+action.payload[0]][+action.payload[1]] = state.value;
-            state.value = state.value === 'X' ? 'O' : 'X';
+            state.value = state.value === 'x' ? 'O' : 'x';
             if (state.newMode) {
-                if (state.played.length === 5) {
+                if (state.played.length === 6) {
                     const deleteValue = state.played.shift();
                     state.matrix[+deleteValue[0]][+deleteValue[1]] = null;
                 }
                 state.played.push(action.payload)
             }
 
+            if (state.matrix.map((arr: any) => {
+                return arr.every((el: any) => el !== null);
+            })) state.isDraw = true
+
             gameSlice.caseReducers.sameInColumn(state);
             gameSlice.caseReducers.sameInRow(state);
             gameSlice.caseReducers.sameInDiagonal1(state);
             gameSlice.caseReducers.sameInDiagonal2(state);
+            gameSlice.caseReducers.checkDraw(state)
         },
-        handleCheckbox: (state) => {
-            state.newMode = !state.newMode
-        }
+        handleNewMode: (state, action) => {
+            if (action.payload === 0) state.newMode = true;
+            else state.newMode = false;
+        },
+        restart: (state) => {
+            state.matrix = [
+                [null, null, null],
+                [null, null, null],
+                [null, null, null],
+            ] as any,
+                state.value = 'x';
+            state.won = false;
+            state.played = [] as any;
+
+            state.isStarted = false;
+            state.isDraw = false;
+        },
     }
 })
 
-export const { handleClick,handleCheckbox } = gameSlice.actions;
+export const { handleClick, handleNewMode, restart } = gameSlice.actions;
 export default gameSlice.reducer;

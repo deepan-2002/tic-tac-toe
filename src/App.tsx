@@ -1,23 +1,30 @@
 import './App.css'
 import TouchArea from './components/TouchArea'
 import { useDispatch, useSelector } from 'react-redux';
-import { handleCheckbox, handleClick } from './redux/actions';
+import { handleClick, restart } from './redux/actions';
+import CustomizedMenu from './components/Menu';
+import { Button } from '@mui/material';
 
 function App() {
 
   const gameMatrix = useSelector((state: any) => state.game.matrix);
   const isWon = useSelector((state: any) => state.game.won);
   const XO = useSelector((state: any) => state.game.value);
-  const newMode = useSelector((state: any) => state.game.newMode)
+  const isDraw = useSelector((state: any) => state.game.isDraw);
 
   const dispatch = useDispatch();
 
   return (
-    <main style={{ width: '100%', minHeight: '100vh', backgroundColor: 'black', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-      {!isWon && <div style={{ display: 'flex' }}>
-        <input type='checkbox' id='newMode' checked={newMode} onChange={() => dispatch(handleCheckbox())} /> <label htmlFor='newMode' style={{ color: '#fff' }}>New Mode</label>
-      </div>}
-      {isWon && <p style={{ margin: 0, color: '#fff' }}>{XO === 'X' ? 'O' : 'X'} Wins</p>}
+    <main style={{ width: '100%', minHeight: '100vh', backgroundColor: 'black', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', position: 'relative', }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, display: 'flex', justifyContent: 'space-between', width: '100%', padding: '1rem', alignItems: 'center' }}>
+        <CustomizedMenu /><Button variant='outlined' onClick={() => dispatch(restart())}>Restart</Button>
+      </div>
+      <div style={{ position: 'absolute', top: '25%', fontSize: '1.5rem' }}>
+        {isWon ? <p style={{ margin: 0, color: '#fff' }}>{XO === 'x' ? 'O' : 'X'} Wins</p> :
+          isDraw ? <p style={{ margin: 0, color: '#fff' }}>Draw</p> :
+            <p style={{ margin: 0, color: '#fff' }}>Now {XO?.toUpperCase()} turn</p>
+        }
+      </div>
       <div>
         <div style={{ display: 'flex' }}>
           {gameMatrix[0].map((val: any, index: number) => (
@@ -35,7 +42,6 @@ function App() {
           ))}
         </div>
       </div>
-      {!isWon && <p style={{ margin: 0, color: '#fff' }}>{XO} turn</p>}
     </main>
   )
 }
