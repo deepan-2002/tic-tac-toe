@@ -74,13 +74,6 @@ export const gameSlice = createSlice({
             if (!state.isStarted) state.isStarted = true;
             state.matrix[+action.payload[0]][+action.payload[1]] = state.value;
             state.value = state.value === 'x' ? 'O' : 'x';
-            if (state.newMode) {
-                if (state.played.length === 6) {
-                    const deleteValue = state.played.shift();
-                    state.matrix[+deleteValue[0]][+deleteValue[1]] = null;
-                }
-                state.played.push(action.payload)
-            }
 
             if (state.matrix.map((arr: any) => {
                 return arr.every((el: any) => el !== null);
@@ -90,7 +83,17 @@ export const gameSlice = createSlice({
             gameSlice.caseReducers.sameInRow(state);
             gameSlice.caseReducers.sameInDiagonal1(state);
             gameSlice.caseReducers.sameInDiagonal2(state);
-            gameSlice.caseReducers.checkDraw(state)
+            gameSlice.caseReducers.checkDraw(state);
+
+            if (state.newMode) {
+                if (state.played.length === 6) {
+                    const deleteValue = state.played.shift();
+                    if (!state.won) {
+                        state.matrix[+deleteValue[0]][+deleteValue[1]] = null;
+                    }
+                }
+                state.played.push(action.payload)
+            }
         },
         handleNewMode: (state, action) => {
             if (action.payload === 0) state.newMode = true;
